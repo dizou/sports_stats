@@ -30,7 +30,7 @@ class IndexView(View):
             date = str(form['date'].value()).replace('-', '')
             response = urllib2.urlopen(data_url % (date, date, date))
             html = response.read()
-            soup = BeautifulSoup(html)
+            soup = BeautifulSoup(html, 'html5lib')
             lines = str(soup.currentTag).split('\n')
             start_index = -1
             for i, line in enumerate(lines):
