@@ -40,7 +40,7 @@ class IndexView(View):
                 break
 
             if start_index >= 0:
-                lines = [line.replace('<br />', '').split(';') for line in lines[start_index:]]
+                lines = [line.replace('<br/>', '').replace('<br />', '').split(';') for line in lines[start_index:]]
                 csv_response = HttpResponse(content_type='text/csv')
                 csv_response['Content-Disposition'] = 'attachment; filename="%s.csv"' % date
 
