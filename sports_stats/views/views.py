@@ -4,7 +4,10 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import View
 
-from BeautifulSoup import BeautifulSoup
+try:
+    from BeautifulSoup import BeautifulSoup
+except:
+    from bs4 import BeautifulSoup
 import urllib2
 import csv
 
