@@ -14,6 +14,15 @@ from sports_stats.forms.data_forms import DateForm
 data_url = "http://rotoguru1.com/cgi-bin/hoopstat-daterange.pl?startdate=%s&date=%s&saldate=%s&g=0&ha=&min=&tmptmin=0&tmptmax=999&opptmin=0&opptmax=999&gmptmin=0&gmptmax=999&gameday="
 
 
+def num_or_none(val, num_func, default=0):
+    if val == '':
+        return default
+    try:
+        return num_func(val)
+    except:
+        raise
+
+
 class IndexView(View):
     date_form = DateForm
     template_name = "index.html"
@@ -72,50 +81,48 @@ class IndexView(View):
                                     team=line[4]
                                 )
                             )
-                Player.objects.bulk_create(new_players)
 
-                for line in lines[1:]:
-                    gid = line[0]
-                    if gid.isdigit():
-                        if (gid, date) in new_appearance_ids:
+                        if (int(gid), date) in new_appearance_ids:
                             new_appearances.append(
                                 Appearance(
                                     player=Player.objects.get(gid=gid),
-                                    date=date,
-                                    started=line[6],
-                                    min=line[7],
-                                    fg=line[8],
-                                    fga=line[9],
-                                    tp=line[10],
-                                    tpa=line[11],
-                                    ft=line[12],
-                                    fta=line[13],
-                                    orb=line[14],
-                                    drb=line[15],
-                                    rb=line[16],
-                                    ast=line[17],
-                                    stl=line[18],
-                                    blk=line[19],
-                                    to=line[20],
-                                    pf=line[21],
-                                    dq=line[22],
-                                    plus_minus=line[23],
-                                    dd=line[24],
-                                    td=line[25],
-                                    fanduel_pts=line[26],
-                                    draftkings_pts=line[27],
-                                    draftday_pts=line[28],
-                                    fanduel_position=line[29],
-                                    fanduel_salary=line[30],
-                                    draftkings_position=line[31],
-                                    draftkings_salary=line[32],
-                                    draftday_position=line[33],
-                                    draftday_salary=line[34],
-                                    team_pts=line[35],
-                                    oppt_pts=line[36],
-                                    total_pts=line[37],
+                                    date=date[0:4] + '-' + date[4-6] + '-' + date[6:],
+                                    started=num_or_none(line[6], int),
+                                    min=num_or_none(line[7], int),
+                                    fg=num_or_none(line[8], int),
+                                    fga=num_or_none(line[9], int),
+                                    tp=num_or_none(line[10], int),
+                                    tpa=num_or_none(line[11], int),
+                                    ft=num_or_none(line[12], int),
+                                    fta=num_or_none(line[13], int),
+                                    orb=num_or_none(line[14], int),
+                                    drb=num_or_none(line[15], int),
+                                    rb=num_or_none(line[16], int),
+                                    ast=num_or_none(line[17], int),
+                                    stl=num_or_none(line[18], int),
+                                    blk=num_or_none(line[19], int),
+                                    to=num_or_none(line[20], int),
+                                    pf=num_or_none(line[21], int),
+                                    dq=num_or_none(line[22], int),
+                                    plus_minus=num_or_none(line[23], int),
+                                    dd=num_or_none(line[24], int),
+                                    td=num_or_none(line[25], int),
+                                    fanduel_pts=num_or_none(line[26], float),
+                                    draftkings_pts=num_or_none(line[27], float),
+                                    draftday_pts=num_or_none(line[28], float),
+                                    fanduel_position=num_or_none(line[29], int),
+                                    fanduel_salary=num_or_none(line[30], int),
+                                    draftkings_position=num_or_none(line[31], int),
+                                    draftkings_salary=num_or_none(line[32], int),
+                                    draftday_position=num_or_none(line[33], int, -1),
+                                    draftday_salary=num_or_none(line[34], int, -1),
+                                    team_pts=num_or_none(line[35], int),
+                                    oppt_pts=num_or_none(line[36], int),
+                                    total_pts=num_or_none(line[37], int),
                                 )
                             )
+                Player.objects.bulk_create(new_players)
+
                 Appearance.objects.bulk_create(new_appearances)
 
             return response
