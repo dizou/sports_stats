@@ -56,7 +56,7 @@ class IndexView(View):
                     writer.writerow(line)
                 response = csv_response
 
-                existing_appearance_ids = set([(int(a['gid']), a['date']) for a in Appearance.objects.values('player_id', 'date')])
+                existing_appearance_ids = set([(int(a['player_id']), a['date']) for a in Appearance.objects.values('player_id', 'date')])
                 appearance_ids = set([(int(line[0]), date) for line in lines if line[0].isdigit()])
                 new_appearance_ids = appearance_ids - existing_appearance_ids
 
