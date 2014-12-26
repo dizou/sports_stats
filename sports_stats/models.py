@@ -27,6 +27,7 @@ class Player(models.Model):
 class Appearance(models.Model):
     id_appearance = models.AutoField(primary_key=True)
     player = models.ForeignKey(Player, null=False)
+    gid = models.IntegerField(null=False)
     date = models.DateField(null=False)
     started = models.BooleanField(null=False, default=False)
     min = models.IntegerField(null=False, default=0)

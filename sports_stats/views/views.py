@@ -56,7 +56,7 @@ class IndexView(View):
                     writer.writerow(line)
                 response = csv_response
 
-                existing_appearance_ids = set([(int(a['player_id']), a['date']) for a in Appearance.objects.values('player_id', 'date')])
+                existing_appearance_ids = set([(int(a['gid']), str(a['date']).replace('-', '')) for a in Appearance.objects.values('gid', 'date')])
                 appearance_ids = set([(int(line[0]), date) for line in lines if line[0].isdigit()])
                 new_appearance_ids = appearance_ids - existing_appearance_ids
 
@@ -82,11 +82,17 @@ class IndexView(View):
                                 )
                             )
 
+                Player.objects.bulk_create(new_players)
+
+                for line in lines[1:]:
+                    gid = line[0]
+                    if gid.isdigit():
                         if (int(gid), date) in new_appearance_ids:
                             new_appearances.append(
                                 Appearance(
                                     player=Player.objects.get(gid=gid),
-                                    date=date[0:4] + '-' + date[4-6] + '-' + date[6:],
+                                    gid=gid,
+                                    date=date[0:4] + '-' + date[4:6] + '-' + date[6:],
                                     started=num_or_none(line[6], int),
                                     min=num_or_none(line[7], int),
                                     fg=num_or_none(line[8], int),
@@ -121,7 +127,6 @@ class IndexView(View):
                                     total_pts=num_or_none(line[37], int),
                                 )
                             )
-                Player.objects.bulk_create(new_players)
 
                 Appearance.objects.bulk_create(new_appearances)
 
